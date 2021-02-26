@@ -1,0 +1,31 @@
+
+@import "./functions";
+
+body {
+    font-family: "Lato", sans-serif;
+    color: $color-grey-dark-3;
+    font-weight:  weight(regular);
+    font-size: $font-size-default;
+}
+
+input[type="text"], input[type="number"]{
+    color: inherit;
+    font-family: inherit;
+}
+
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type=number] {
+  -moz-appearance: textfield;
+}
+
+::selection {
+    background-color: $color-primary;
+    color: $color-white;
+}
