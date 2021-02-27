@@ -1,13 +1,14 @@
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 import AppContext from './context/AppContext';
 import Authenticate_page from './components/pages/Authenticate_page';
-
+import Error404_page from './components/pages/Error404_page';
 function App() {
     return (
         <AppContext>
             <Router>
                 <Switch>
                     <Route exact path="/" component={Authenticate_page} />
+                    <Route component={Error404_page}/>
                 </Switch>
             </Router>
         </AppContext>

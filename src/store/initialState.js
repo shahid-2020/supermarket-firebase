@@ -1,8 +1,9 @@
 export const initialState = {
     auth: {
-        userId: null,
         username: null,
         userPhoneNumber:null,
-        userRoles:[]
+        userRoles:[], //seller customer admin
+        currentRole:null,
+        createdAt:null
     }
 };

@@ -3,7 +3,7 @@ import './Authenticate_page.scss';
 import Authenticate from '../../containers/Authenticate';
 function Authenticate_page() {
     return (
-        <div className='authenticate'>
+        <div className='authenticate_page'>
             <Authenticate />
         </div>
     );
