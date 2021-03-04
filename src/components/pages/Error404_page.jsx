@@ -1,11 +1,12 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos';
+import '../../scss/_layout.scss';
 import './Error404_page.scss';
 
 function Error404_page() {
     return (
-        <div className='error404_page'>
+        <div className='image-background error404_page'>
             <div className='error404_page__container'>
                 <Link to='/'>
                     <ArrowBackIosIcon />

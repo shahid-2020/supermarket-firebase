@@ -1,0 +1,59 @@
+@import "../scss/variables";
+@import "../scss/functions";
+.header{
+    background-color: $color-primary-dark;
+    padding: 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    &:first-child{
+        padding-left: 2rem;
+    }
+
+    &:last-child{
+        padding-right: 2rem;
+    }
+
+    &__logo{
+        color: $color-white;
+        font-family: cursive;
+        font-weight: weight(regular);
+        letter-spacing: .2rem;
+        padding: 1rem;
+        cursor: default;
+    }
+
+    &__search{
+        width: 40%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        &-input{
+            width: 60%;
+            background-color: $color-grey-light-2;
+            padding: 1rem 2rem;
+            border:none;
+            border-radius: 2rem;
+            transition: all .5s;
+
+            &:focus{
+                width: 100%;
+                outline: none;
+                box-shadow: $box-shadow;
+            }
+        }
+
+        &-label{
+            padding: 1rem 0;
+            margin-left: -3rem;
+        }
+    }
+
+    &__icons{
+        width: 10%;
+        display: flex;
+        justify-content: space-around;
+    }
+}

@@ -1,8 +1,13 @@
-import React, { useReducer, createContext } from 'react';
+import React, { useReducer, createContext, useContext } from 'react';
 import { initialState } from '../store/initialState';
 import reducer from '../reducer/reducer';
 
 const context = createContext();
+
+function useConsumer() {
+    return useContext(context);
+}
+
 function AppContext({ children }) {
     const [store, dispatch] = useReducer(reducer, initialState);
     return (
@@ -13,4 +18,4 @@ function AppContext({ children }) {
 }
 
 export default AppContext;
-export { context };
+export { useConsumer };

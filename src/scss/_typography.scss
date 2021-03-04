@@ -6,10 +6,18 @@ body {
     color: $color-grey-dark-3;
     font-weight:  weight(regular);
     font-size: $font-size-default;
+    /* works on Firefox */
+    scrollbar-width: thin;/* "auto" or "thin" */
+    scrollbar-color: $color-primary; 
 }
 
-input[type="text"], input[type="number"]{
-    color: inherit;
+::selection {
+  background-color: $color-primary;
+  color: $color-white;
+}
+
+input{
+    color: $color-grey-dark-3;
     font-family: inherit;
 }
 
@@ -25,7 +33,17 @@ input[type=number] {
   -moz-appearance: textfield;
 }
 
-::selection {
-    background-color: $color-primary;
-    color: $color-white;
+/* Works on Chrome, Edge, and Safari */
+*::-webkit-scrollbar {
+  width: .8rem;
+}
+
+*::-webkit-scrollbar-track {
+  background-color: $color-grey-light-1;
+  border-radius: 2.5rem;
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: $color-primary;
+  border-radius: 2.5rem;
 }

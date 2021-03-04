@@ -1,20 +1,21 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import Input from './Input';
-import './PhoneNumber.scss';
+import '../scss/_layout.scss';
+import '../scss/_utils.scss';
 
 function PhoneNumber({ btnId, submitHandler }) {
     return (
         <div className='sidebar'>
             <div className='heading'>
-                <h2 className="heading__main u-margin-bottom-small">
+                <h2 className='heading__main u-margin-bottom-small'>
                     Enter your phone number for verification.
                 </h2>
-                <h3 className="heading__sub u-margin-bottom-small">
-                    A 4-digit OTP will be sent on SMS
+                <h3 className='heading__sub u-margin-bottom-small'>
+                    A 6-digit OTP will be sent on SMS
                 </h3>
                 <form className='form' onSubmit={submitHandler}>
-                    <div className="form__group">
+                    <div className='form__group'>
                         <Input
                             type='text'
                             name='phoneNumber'

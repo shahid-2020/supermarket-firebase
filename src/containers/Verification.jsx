@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import './Verification.scss';
+import '../scss/_layout.scss';
+import '../scss/_utils.scss';
 
 function Verification({ phoneNumber, resendHandler, submitHandler }) {
 
@@ -20,14 +21,14 @@ function Verification({ phoneNumber, resendHandler, submitHandler }) {
     return (
         <div className='sidebar'>
             <div className='heading'>
-                <h2 className="heading__main u-margin-bottom-small">
+                <h2 className='heading__main u-margin-bottom-small'>
                     Enter the code that was sent to
                 </h2>
-                <h3 className="heading__sub u-margin-bottom-small">
+                <h3 className='heading__sub u-margin-bottom-small'>
                     {phoneNumber}
                 </h3>
                 <form className='form' onSubmit={e => submitHandler(e, otp.join(''))}>
-                    <div className="form__group">
+                    <div className='form__group'>
 
                         {otp.map((_, index) => (
                             <input

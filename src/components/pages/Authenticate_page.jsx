@@ -1,9 +1,9 @@
 import React from 'react';
-import './Authenticate_page.scss';
 import Authenticate from '../../containers/Authenticate';
+import '../../scss/_layout.scss';
 function Authenticate_page() {
     return (
-        <div className='authenticate_page'>
+        <div className='image-background'>
             <Authenticate />
         </div>
     );
