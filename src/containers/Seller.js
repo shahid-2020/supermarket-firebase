@@ -1,14 +1,15 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useHistory } from 'react-router-dom';
 import { useConsumer } from '../context/AppContext';
 import { firestore } from '../firebase/firebase';
 import db from '../db/db';
 import Header from './Header';
-import AddCircleIcon from '@material-ui/icons/AddCircle';
 import Modal from '../components/Modal';
-import CustomizedSnackbar from './toolbar/CustomizedSnackbar';
 import ShopCard from '../components/ShopCard';
 import Spinner from './toolbar/Spinner';
-import './Seller.scss';
+import CustomizedSnackbar from './toolbar/CustomizedSnackbar';
+import AddCircleIcon from '@material-ui/icons/AddCircle';
+import '../scss/_layout.scss';
 
 const modalArr = [
     { type: 'text', name: 'shopName', inputClass: 'form__input', placeholder: 'Shop Name', required: true, label: 'Shop Name', labelClass: 'form__label' },
@@ -22,28 +23,43 @@ const modalArr = [
 
 function Seller() {
 
+    const { store, dispatch } = useConsumer();
+    const history = useHistory();
     const modalRef = useRef(null);
+    const [displayShops, setDisplayShops] = useState([]);
     const [modal, setModal] = useState(false);
     const [spinner, setSpinner] = useState(false);
     const [csb, setCsb] = useState({ open: false, message: '', severity: '' });
-    const { store, dispatch } = useConsumer();
 
     useEffect(() => {
         setSpinner(true);
     }, []);
 
     useEffect(() => {
+
+        if (!store.auth.userPhoneNumber) {
+            history.push('/');
+            return;
+        }
+
         if (modal) {
             modalRef.current.onclick = modalHandler;
         }
-        let shopsArr = [];
-        const unsubscribe = firestore.collection('users').doc('+917782996069').collection('seller')
+
+        let latestShopsArr = [];
+        const unsubscribe = firestore.collection('users').doc(store.auth.userPhoneNumber).collection('seller')
             .onSnapshot((querySnapshot) => {
                 querySnapshot.forEach((doc) => {
-                    shopsArr.push(doc.data());
+                    latestShopsArr.push(doc.data());
                 });
-                dispatch({ type: 'SET_SHOPS', payload: shopsArr });
-                shopsArr = [];
+                dispatch({ type: 'SET_SHOPS', payload: latestShopsArr });
+                setDisplayShops(latestShopsArr);
+                latestShopsArr = [];
+
+                if (spinner) {
+                    setSpinner(false);
+                }
+            }, (error) => {
                 if (spinner) {
                     setSpinner(false);
                 }
@@ -51,25 +67,24 @@ function Seller() {
 
         return () => unsubscribe();
 
-    }, [modal, dispatch, spinner]);
+
+    }, [history, modal, store, dispatch, spinner]);
+
+    const searchHandler = (e) => {
+        let search = e.target.value.trim().toLowerCase();
+
+        if (search === '') {
+            setDisplayShops(store.shops);
+        } else {
+            let shops = displayShops.filter((shop) => (shop.shopName.trim().toLowerCase().includes(search)));
+            setDisplayShops(shops);
+        }
+    };
 
     const modalHandler = (e) => {
         if (e.target.className === 'overlay' || e.target.className === 'modal__close') {
             setModal(false);
         }
-    };
-
-    const handleSwitch = async (e, shopId) => {
-        if (e.target.name === 'shopOpen') {
-            await db.updateShop('+917782996069', shopId, { shopOpen: e.target.checked });
-        } else if (e.target.name === 'shopDeliver') {
-            await db.updateShop('+917782996069', shopId, { shopDeliver: e.target.checked });
-        }
-    };
-
-    const deleteShop = async (shopId) => {
-        await db.deleteShop('+917782996069', shopId);
-        setCsb({ open: true, message: 'Shop deleted', severity: 'error' });
     };
 
     const submitHandler = async (e) => {
@@ -81,18 +96,42 @@ function Seller() {
         const shopCity = e.target['shopCity'].value;
         const shopState = e.target['shopState'].value;
 
-        await db.setShop('+917782996069', { shopName, shopEmail, shopPhoneNumber, shopLandmark, shopCity, shopState });
-        setCsb({ open: true, message: 'Shop created', severity: 'success' });
+        let res = await db.setShop(store.auth.userPhoneNumber, { shopName, shopEmail, shopPhoneNumber, shopLandmark, shopCity, shopState });
+
+        if (res) {
+            setCsb({ open: true, message: 'Shop created', severity: 'success' });
+        } else {
+            setCsb({ open: true, message: 'Something went wrong', severity: 'error' });
+        }
+
         setModal(false);
+    };
+
+    // const switchHandler = async (e, shopId) => {
+    //     if (e.target.name === 'shopOpen') {
+    //         await db.updateShop(store.auth.userPhoneNumber, shopId, { shopOpen: e.target.checked });
+    //     } else if (e.target.name === 'shopDeliver') {
+    //         await db.updateShop(store.auth.userPhoneNumber, shopId, { shopDeliver: e.target.checked });
+    //     }
+    // };
+
+    const deleteHandler = async (shopId) => {
+        let res = await db.deleteShop(store.auth.userPhoneNumber, shopId);
+
+        if (res) {
+            setCsb({ open: true, message: 'Shop deleted', severity: 'error' });
+        } else {
+            setCsb({ open: true, message: 'Something went wrong', severity: 'error' });
+        }
     };
 
 
     return (
         <>
-            <Header />
             {spinner && <Spinner />}
+            <Header searchHandler={searchHandler} />
             <div className='cards'>
-                {(store.shops.length > 0) ? store.shops.map((ele, i) => (<ShopCard {...ele} handleSwitch={handleSwitch} deleteShop={deleteShop} key={i} />))
+                {(displayShops.length > 0) ? displayShops.map((ele, i) => (<ShopCard {...ele} deleteShop={deleteHandler} key={i} />))
                     : <h3 className='cards-empty'>There is no shop yet.</h3>}
             </div>
             {modal && <Modal title='Create Shop' modalArr={modalArr} ref={modalRef} submitHandler={submitHandler} />}

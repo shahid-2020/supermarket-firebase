@@ -6,5 +6,6 @@ export const initialState = {
         userEmail: null,
         userType: null
     },
-    shops: []
+    shops: [],
+    products:[]
 };

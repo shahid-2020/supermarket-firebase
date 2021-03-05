@@ -6,7 +6,7 @@ function Form_page() {
         <div className='image-background'>
             <Form/>
         </div>
-    )
+    );
 }
 
 export default Form_page;

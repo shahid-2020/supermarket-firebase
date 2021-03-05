@@ -3,7 +3,7 @@ export default function reducer(state, action) {
         case 'SET_AUTH':
             return {
                 ...state,
-                 auth: {
+                auth: {
                     ...state.auth,
                     userId: action.payload.userId,
                     userName: action.payload.userName,
@@ -13,11 +13,11 @@ export default function reducer(state, action) {
                 }
             };
 
-            case 'SET_SHOPS':
-                return {
-                    ...state,
-                    shops: action.payload
-                };
+        case 'SET_SHOPS':
+            return {
+                ...state,
+                shops: action.payload
+            };
         default:
             throw new Error('Unexpected action');
     }

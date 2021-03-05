@@ -9,6 +9,7 @@
 
     &:hover{
         transform: scale(1.1);
+        box-shadow: 0 1.5rem 4rem rgba($color-black, .10);
     }
 
     &__heading{

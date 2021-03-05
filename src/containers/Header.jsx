@@ -5,8 +5,8 @@ import SettingsIcon from '@material-ui/icons/Settings';
 import ShoppingCartIcon from '@material-ui/icons/ShoppingCart';
 import './Header.scss';
 
-function Header({ userType }) {
-  
+function Header({ searchHandler, cartHandler, settingHandler }) {
+
     return (
         <header className='header'>
             <h1 className='header__logo'>
@@ -17,7 +17,8 @@ function Header({ userType }) {
                     type='text'
                     id='header__search-input'
                     className='header__search-input'
-                    placeholder='Search for shop, products and more..' />
+                    placeholder='Search for shop, products and more..'
+                    onChange={searchHandler} />
 
                 <label htmlFor='header__search-input' className='header__search-label'>
                     <SearchIcon fontSize='large' style={{ cursor: 'pointer' }} />
@@ -25,10 +26,11 @@ function Header({ userType }) {
             </div>
 
             <div className='header__icons'>
-            <AccountCircleIcon fontSize='large' style={{ color: 'white', cursor: 'pointer' }} />
-                {(userType === 'buyer') && 
-                <ShoppingCartIcon fontSize='large' style={{ color: 'white', cursor: 'pointer' }} />}
-                <SettingsIcon fontSize='large' style={{ color: 'white', cursor: 'pointer' }} />
+                <AccountCircleIcon fontSize='large' style={{ color: 'white', cursor: 'pointer' }} />
+                {cartHandler &&
+                    <ShoppingCartIcon fontSize='large' style={{ color: 'white', cursor: 'pointer' }} onClick={cartHandler} />}
+
+                {settingHandler && <SettingsIcon fontSize='large' style={{ color: 'white', cursor: 'pointer' }} onClick={settingHandler} />}
             </div>
 
         </header>

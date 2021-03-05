@@ -16,18 +16,7 @@ const Modal = forwardRef(
                         <form className='form' onSubmit={submitHandler}>
                             {modalArr.map((ele, i) => {
                                 return (<div className='form__group' key={i}>
-                                    <Input
-                                        type={ele.type}
-                                        name={ele.name}
-                                        inputClass={ele.inputClass}
-                                        id={ele.id}
-                                        placeholder={ele.placeholder}
-                                        required={ele.required}
-                                        minLength={ele.maxLength}
-                                        maxLength={ele.minLength}
-                                        label={ele.label}
-                                        labelClass={ele.labelClass}
-                                    />
+                                    <Input {...ele}/>
                                 </div>);
                             })}
                         </form>

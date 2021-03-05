@@ -1,5 +1,5 @@
 import React from 'react';
-import {Link, useLocation} from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom';
 import { withStyles } from '@material-ui/core/styles';
 import Switch from '@material-ui/core/Switch';
 import DeleteIcon from '@material-ui/icons/Delete';
@@ -40,40 +40,40 @@ const AntSwitch = withStyles((theme) => ({
 }))(Switch);
 
 
-function ShopCard({ shopName, shopEmail, shopPhoneNumber, shopOpen, shopDeliver, shopId, handleSwitch, deleteShop }) {
-    const location = useLocation();
-    return (
-        <div className='card'>
+function ShopCard({ shopName, shopEmail, shopPhoneNumber, shopOpen, shopDeliver, shopId, deleteShop }) {
+  const location = useLocation();
+  return (
+    <div className='card'>
 
-                <h2 className='card__heading'>{shopName}</h2>
+      <h2 className='card__heading'>{shopName}</h2>
 
-            <div className='card__group'>
-                <h3 className='card__group-main'>Email</h3>
-                <p className='card__group-sub'>{shopEmail}</p>
-            </div>
+      <div className='card__group'>
+        <h3 className='card__group-main'>Email</h3>
+        <p className='card__group-sub'>{shopEmail}</p>
+      </div>
 
-            <div className='card__group'>
-                <h3 className='card__group-main'>Phone number</h3>
-                <p className='card__group-sub'>{shopPhoneNumber}</p>
-            </div>
+      <div className='card__group'>
+        <h3 className='card__group-main'>Phone number</h3>
+        <p className='card__group-sub'>{shopPhoneNumber}</p>
+      </div>
 
-            <div className='card__group'>
-                <h3 className='card__group-main'>Open</h3>
-                <AntSwitch checked={shopOpen} name='shopOpen' onChange={(e) => handleSwitch(e, shopId)}/>
-            </div>
+      <div className='card__group'>
+        <h3 className='card__group-main'>Open</h3>
+        <AntSwitch checked={shopOpen} name='shopOpen' onChange={() => false} />
+      </div>
 
-            <div className='card__group'>
-                <h3 className='card__group-main'>Deliver</h3>
-                <AntSwitch checked={shopDeliver}  name='shopDeliver' onChange={(e) => handleSwitch(e, shopId)}/>
-            </div>
+      <div className='card__group'>
+        <h3 className='card__group-main'>Deliver</h3>
+        <AntSwitch checked={shopDeliver} name='shopDeliver' onChange={() => false} />
+      </div>
 
-            <Link to={`${location.pathname}/${shopId}`}>
-            Enter Shop
+      <Link to={`${location.pathname}/${shopId}`}>
+        Enter Shop
             </Link>
 
-            <DeleteIcon fontSize='large' className='delete-icon' onClick={() => deleteShop(shopId)}/>
-        </div>
-    );
+      <DeleteIcon fontSize='large' className='delete-icon' onClick={() => deleteShop(shopId)} />
+    </div>
+  );
 }
 
 export default ShopCard;
