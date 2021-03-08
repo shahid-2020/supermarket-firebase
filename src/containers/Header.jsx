@@ -1,17 +1,23 @@
 import React from 'react';
+import { useHistory } from 'react-router-dom';
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 import SearchIcon from '@material-ui/icons/Search';
 import SettingsIcon from '@material-ui/icons/Settings';
 import ShoppingCartIcon from '@material-ui/icons/ShoppingCart';
+import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos';
 import './Header.scss';
 
-function Header({ searchHandler, cartHandler, settingHandler }) {
-
+function Header({ back, searchHandler, cartHandler, settingHandler }) {
+    const history = useHistory();
     return (
         <header className='header'>
-            <h1 className='header__logo'>
-                Supermarket
+            <div className='header__start'>
+                {back && <ArrowBackIosIcon fontSize='large' style={{ color: 'white', cursor: 'pointer' }} onClick={() => history.goBack()} />}
+                <h1 className='header__logo'>
+                    Supermarket
                 </h1>
+            </div>
+
             <div className='header__search'>
                 <input
                     type='text'

@@ -40,7 +40,7 @@ const AntSwitch = withStyles((theme) => ({
 }))(Switch);
 
 
-function ShopCard({ shopName, shopEmail, shopPhoneNumber, shopOpen, shopDeliver, shopId, deleteShop }) {
+function ShopCard({ shopName, shopEmail, shopPhoneNumber, shopOpen, shopDeliver, shopId, switchHandler, deleteShop }) {
   const location = useLocation();
   return (
     <div className='card'>
@@ -59,17 +59,17 @@ function ShopCard({ shopName, shopEmail, shopPhoneNumber, shopOpen, shopDeliver,
 
       <div className='card__group'>
         <h3 className='card__group-main'>Open</h3>
-        <AntSwitch checked={shopOpen} name='shopOpen' onChange={() => false} />
+        <AntSwitch checked={shopOpen} name='shopOpen' onChange={(e) => false} />
       </div>
 
       <div className='card__group'>
         <h3 className='card__group-main'>Deliver</h3>
-        <AntSwitch checked={shopDeliver} name='shopDeliver' onChange={() => false} />
+        <AntSwitch checked={shopDeliver} name='shopDeliver' onChange={(e) => false} />
       </div>
 
       <Link to={`${location.pathname}/${shopId}`}>
         Enter Shop
-            </Link>
+      </Link>
 
       <DeleteIcon fontSize='large' className='delete-icon' onClick={() => deleteShop(shopId)} />
     </div>

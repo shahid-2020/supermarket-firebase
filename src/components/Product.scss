@@ -1,7 +1,8 @@
 @import '../scss/variables';
-.card{
-    width: 40%;
-    margin: 2rem 0;
+.product{
+    height: 40rem;
+    width: 30rem;
+    margin: 2rem 1rem;
     padding: 2rem;
     border-left: 1rem solid $color-primary;
     box-shadow: $box-shadow;
@@ -18,16 +19,25 @@
         text-transform: capitalize;
     }
 
+    &__img{
+        display: inline-block;
+        margin: .5rem auto;
+        height: 60%;
+
+    }
+
     &__group{
-        margin: 1rem 0;
+        margin: .5rem 0;
         display: flex;
-        justify-content: space-between;
+        justify-content: space-around;
 
     }
 }
 
-.delete-icon{
+.product-delete-icon{
+    color: $color-tertiary;
     margin: 0 2rem;
     transform: translateY(.5rem);
     cursor: pointer;
+    z-index: -10;
 }

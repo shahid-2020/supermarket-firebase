@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useHistory } from 'react-router-dom';
 import { useConsumer } from '../context/AppContext';
-import { firestore } from '../firebase/firebase';
 import db from '../db/db';
 import Header from './Header';
 import Modal from '../components/Modal';
@@ -29,11 +28,19 @@ function Seller() {
     const [displayShops, setDisplayShops] = useState([]);
     const [modal, setModal] = useState(false);
     const [spinner, setSpinner] = useState(false);
-    const [csb, setCsb] = useState({ open: false, message: '', severity: '' });
 
-    useEffect(() => {
+    const fetchShops = () => {
+        if (!store.auth.userPhoneNumber) {
+            return;
+        }
         setSpinner(true);
-    }, []);
+        db.getShops(store.auth.userPhoneNumber)
+            .then((shops) => {
+                dispatch({ type: 'SET_SHOPS', payload: shops });
+                setDisplayShops(shops);
+                setSpinner(false);
+            });
+    };
 
     useEffect(() => {
 
@@ -46,29 +53,36 @@ function Seller() {
             modalRef.current.onclick = modalHandler;
         }
 
-        let latestShopsArr = [];
-        const unsubscribe = firestore.collection('users').doc(store.auth.userPhoneNumber).collection('seller')
-            .onSnapshot((querySnapshot) => {
-                querySnapshot.forEach((doc) => {
-                    latestShopsArr.push(doc.data());
-                });
-                dispatch({ type: 'SET_SHOPS', payload: latestShopsArr });
-                setDisplayShops(latestShopsArr);
-                latestShopsArr = [];
+        // let latestShopsArr = [];
+        // const unsubscribe = firestore.collection('users').doc(store.auth.userPhoneNumber).collection('seller')
+        //     .onSnapshot((querySnapshot) => {
+        //         querySnapshot.forEach((doc) => {
+        //             latestShopsArr.push(doc.data());
+        //         });
+        //         dispatch({ type: 'SET_SHOPS', payload: latestShopsArr });
+        //         setDisplayShops(latestShopsArr);
+        //         latestShopsArr = [];
 
-                if (spinner) {
-                    setSpinner(false);
-                }
-            }, (error) => {
-                if (spinner) {
-                    setSpinner(false);
-                }
-            });
+        //         if (spinner) {
+        //             setSpinner(false);
+        //         }
+        //     }, (error) => {
+        //         if (spinner) {
+        //             setSpinner(false);
+        //         }
+        //     });
 
-        return () => unsubscribe();
+        // return () => unsubscribe();
 
 
-    }, [history, modal, store, dispatch, spinner]);
+    }, [history, store, modal]);
+
+    useEffect(() => {
+        setSpinner(true);
+        fetchShops();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
 
     const searchHandler = (e) => {
         let search = e.target.value.trim().toLowerCase();
@@ -76,7 +90,7 @@ function Seller() {
         if (search === '') {
             setDisplayShops(store.shops);
         } else {
-            let shops = displayShops.filter((shop) => (shop.shopName.trim().toLowerCase().includes(search)));
+            let shops = store.shops.filter((shop) => (shop.shopName.trim().toLowerCase().includes(search)));
             setDisplayShops(shops);
         }
     };
@@ -99,29 +113,33 @@ function Seller() {
         let res = await db.setShop(store.auth.userPhoneNumber, { shopName, shopEmail, shopPhoneNumber, shopLandmark, shopCity, shopState });
 
         if (res) {
-            setCsb({ open: true, message: 'Shop created', severity: 'success' });
+            dispatch({ type: 'SET_ALERT', payload: { open: true, message: 'Shop created', severity: 'success' } });
+            fetchShops();
         } else {
-            setCsb({ open: true, message: 'Something went wrong', severity: 'error' });
+            dispatch({ type: 'SET_ALERT', payload: { open: true, message: 'Something went wrong', severity: 'error' } });
         }
 
         setModal(false);
     };
 
-    // const switchHandler = async (e, shopId) => {
-    //     if (e.target.name === 'shopOpen') {
-    //         await db.updateShop(store.auth.userPhoneNumber, shopId, { shopOpen: e.target.checked });
-    //     } else if (e.target.name === 'shopDeliver') {
-    //         await db.updateShop(store.auth.userPhoneNumber, shopId, { shopDeliver: e.target.checked });
-    //     }
-    // };
+    const switchHandler = async (e, shopId) => {
+        console.log(e.target.checked);
+        if (e.target.name === 'shopOpen') {
+            await db.updateShop(store.auth.userPhoneNumber, shopId, { shopOpen: e.target.checked });
+        } else if (e.target.name === 'shopDeliver') {
+            await db.updateShop(store.auth.userPhoneNumber, shopId, { shopDeliver: e.target.checked });
+
+        }
+    };
 
     const deleteHandler = async (shopId) => {
         let res = await db.deleteShop(store.auth.userPhoneNumber, shopId);
 
         if (res) {
-            setCsb({ open: true, message: 'Shop deleted', severity: 'error' });
+            fetchShops();
+            dispatch({ type: 'SET_ALERT', payload: { open: true, message: 'Shop deleted', severity: 'error' } });
         } else {
-            setCsb({ open: true, message: 'Something went wrong', severity: 'error' });
+            dispatch({ type: 'SET_ALERT', payload: { open: true, message: 'Something went wrong', severity: 'error' } });
         }
     };
 
@@ -131,12 +149,12 @@ function Seller() {
             {spinner && <Spinner />}
             <Header searchHandler={searchHandler} />
             <div className='cards'>
-                {(displayShops.length > 0) ? displayShops.map((ele, i) => (<ShopCard {...ele} deleteShop={deleteHandler} key={i} />))
+                {(displayShops.length > 0) ? displayShops.map((ele, i) => (<ShopCard {...ele} switchHandler={switchHandler} deleteShop={deleteHandler} key={i} />))
                     : <h3 className='cards-empty'>There is no shop yet.</h3>}
             </div>
             {modal && <Modal title='Create Shop' modalArr={modalArr} ref={modalRef} submitHandler={submitHandler} />}
             <AddCircleIcon className='add-icon' onClick={() => setModal(true)} />
-            {csb.open && <CustomizedSnackbar message={csb.message} severity={csb.severity} />}
+            {store.alert.open && <CustomizedSnackbar message={store.alert.message} severity={store.alert.severity} />}
         </>
     );
 }

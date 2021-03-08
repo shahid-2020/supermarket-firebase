@@ -18,6 +18,32 @@ export default function reducer(state, action) {
                 ...state,
                 shops: action.payload
             };
+
+        case 'UPDATE_SHOP':
+            return {
+                ...state,
+                shops: state.shops.map((shop) => (shop.shopId === action.payload.shopId ? { ...shop, ...action.payload.update } : shop))
+
+            };
+
+        case 'SET_PRODUCTS':
+            return {
+                ...state,
+                products: action.payload
+            };
+
+        case 'SET_ALERT':
+            return {
+                ...state,
+                alert: { ...action.payload }
+            };
+
+        case 'RESET_ALERT':
+            return {
+                ...state,
+                alert: { open: false, message: null, severity: null }
+            };
+
         default:
             throw new Error('Unexpected action');
     }

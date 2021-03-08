@@ -1,42 +1,42 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useHistory, useParams } from 'react-router-dom';
 import { useConsumer } from '../context/AppContext';
-import { firestore } from '../firebase/firebase';
 import db from '../db/db';
 import Header from './Header';
+import Product from '../components/Product';
 import Modal from '../components/Modal';
-import ShopCard from '../components/ShopCard';
 import Spinner from './toolbar/Spinner';
 import CustomizedSnackbar from './toolbar/CustomizedSnackbar';
 import AddCircleIcon from '@material-ui/icons/AddCircle';
-import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos';
 import '../scss/_layout.scss';
-
-const modalArr = [
-    { type: 'file', name: 'productImages', inputClass: 'form__input', placeholder: 'Product Images', label: 'Product Images', labelClass: 'form__label' },
-
-    { type: 'text', name: 'productName', inputClass: 'form__input', placeholder: 'Product Name', required: true, label: 'Product Name', labelClass: 'form__label' },
-
-    { type: 'text', name: 'productType', inputClass: 'form__input', placeholder: 'product Type', required: true, label: 'product Type', labelClass: 'form__label' },
-
-    { type: 'text', name: 'productPrice', inputClass: 'form__input', placeholder: 'product Price', required:true, label: 'Product Price', labelClass: 'form__label' },
-
-    { type: 'submit', name: 'addProduct', inputClass: 'btn btn--primary', value: 'Add' }
-];
-
 function Shop() {
 
     const { store, dispatch } = useConsumer();
     const history = useHistory();
-    const {shopId} = useParams();
+    const { shopId } = useParams();
     const modalRef = useRef(null);
+    const [file, setFile] = useState(null);
     const [displayProducts, setDisplayProducts] = useState([]);
     const [modal, setModal] = useState(false);
     const [spinner, setSpinner] = useState(false);
-    const [csb, setCsb] = useState({ open: false, message: '', severity: '' });
+
+    const fetchProducts = () => {
+        // if (!store.auth.userPhoneNumber) {
+        //     return;
+        // }
+        setSpinner(true);
+        db.getProducts(shopId)
+            .then((products) => {
+                dispatch({ type: 'SET_PRODUCTS', payload: products });
+                setDisplayProducts(products);
+                setSpinner(false);
+            });
+    };
+
 
     useEffect(() => {
-        // setSpinner(true);
+        fetchProducts();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     useEffect(() => {
@@ -50,15 +50,15 @@ function Shop() {
             modalRef.current.onclick = modalHandler;
         }
 
-    }, [history, modal, store]);
+    }, [history, store, modal, spinner, displayProducts]);
 
     const searchHandler = (e) => {
         let search = e.target.value.trim().toLowerCase();
 
         if (search === '') {
-            setDisplayProducts(store.shops);
+            setDisplayProducts(store.products);
         } else {
-            let shops = displayProducts.filter((product) => (product.productName.trim().toLowerCase().includes(search)));
+            let shops = store.products.filter((product) => (product.productName.trim().toLowerCase().includes(search)));
             setDisplayProducts(shops);
         }
     };
@@ -69,19 +69,80 @@ function Shop() {
         }
     };
 
+    const fileUploadHandler = (e) => {
+        const selected = e.target.files[0];
+        const types = ['image/jpeg', 'image/jpg', 'image/png'];
+        if (selected && types.includes(selected.type)) {
+            setFile(selected);
+        } else {
+            setFile(null);
+            dispatch({ type: 'SET_ALERT', payload: { open: true, message: 'Invalid Image Type', severity: 'error' } });
+        }
+    };
+
     const submitHandler = async (e) => {
         e.preventDefault();
 
+        if (!file) {
+            dispatch({ type: 'SET_ALERT', payload: { open: true, message: 'Invalid Image', severity: 'error' } });
+            return;
+        }
+
+        setModal(false);
+        setSpinner(true);
+        const productName = e.target['productName'].value;
+        const productManufacturer = e.target['productManufacturer'].value;
+        const productType = e.target['productType'].value;
+        const productPrice = e.target['productPrice'].value;
+
+        let res = await db.setProduct(file, { shopId, productName, productManufacturer, productType, productPrice });
+        if (res) {
+            fetchProducts();
+            dispatch({ type: 'SET_ALERT', payload: { open: true, message: 'Product added successfully', severity: 'success' } });
+        } else {
+            dispatch({ type: 'SET_ALERT', payload: { open: true, message: 'Unable to add product', severity: 'error' } });
+        }
+        setSpinner(false);
     };
+
+    const deleteProduct = async (productId) => {
+        let res = await db.deleteProduct(productId);
+        if (res) {
+            fetchProducts();
+            dispatch({ type: 'SET_ALERT', payload: { open: true, message: 'Shop deleted', severity: 'error' } });
+        } else {
+            dispatch({ type: 'SET_ALERT', payload: { open: true, message: 'Something went wrong', severity: 'error' } });
+        }
+    };
+
+
+
+    const modalArr = [
+        { type: 'file', name: 'productImages', inputClass: 'form__input', placeholder: 'Product Image', label: 'Product Image', labelClass: 'form__label', onChange: fileUploadHandler },
+
+        { type: 'text', name: 'productName', inputClass: 'form__input', placeholder: 'Product Name', required: true, label: 'Product Name', labelClass: 'form__label' },
+
+        { type: 'text', name: 'productManufacturer', inputClass: 'form__input', placeholder: 'Product Manufacturer', required: true, label: 'Product Manufacturer', labelClass: 'form__label' },
+
+        { type: 'text', name: 'productType', inputClass: 'form__input', placeholder: 'Product Type', required: true, label: 'Product Type', labelClass: 'form__label' },
+
+        { type: 'text', name: 'productPrice', inputClass: 'form__input', placeholder: 'Product Price', required: true, label: 'Product Price', labelClass: 'form__label' },
+
+        { type: 'submit', name: 'addProduct', inputClass: 'btn btn--primary', value: 'Add' }
+    ];
 
 
     return (
         <>
             {spinner && <Spinner />}
-            <Header searchHandler={searchHandler} />
+            <Header back searchHandler={searchHandler} />
             {modal && <Modal title='Add Product' modalArr={modalArr} ref={modalRef} submitHandler={submitHandler} />}
+            <div className='cards'>
+            {(displayProducts.length > 0) ? displayProducts.map((product, i) => (<Product {...product} deleteProduct={deleteProduct} key= {i}/>))
+            : <h3 className='cards-empty'>There is no shop yet.</h3>}
+            </div>
             <AddCircleIcon className='add-icon' onClick={() => setModal(true)} />
-            {csb.open && <CustomizedSnackbar message={csb.message} severity={csb.severity} />}
+            {store.alert.open && <CustomizedSnackbar message={store.alert.message} severity={store.alert.severity} />}
         </>
     );
 }

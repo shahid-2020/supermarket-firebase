@@ -21,17 +21,22 @@ function Authenticate() {
     });
     const [spinner, setSpinner] = useState(null);
 
-    useEffect(() => {
+    const setRecaptchaVerifier = () => {
         window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('requestOtp', {
             'size': 'invisible',
             'callback': (response) => { }
         });
+    };
+
+    useEffect(() => {
+        setRecaptchaVerifier();
     }, []);
 
     const resetRecaptchaVerifier = () => {
         window.recaptchaVerifier.render().then(function (widgetId) {
             window.grecaptcha.reset(widgetId);
         });
+        setRecaptchaVerifier();
     };
 
     const requestOTP = async (e) => {

@@ -7,5 +7,6 @@ export const initialState = {
         userType: null
     },
     shops: [],
-    products:[]
+    products: [],
+    alert: { open: false, message: null, severity: null }
 };
