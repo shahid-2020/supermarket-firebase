@@ -1,6 +1,7 @@
 @import "../scss/variables";
 @import "../scss/functions";
-@import "../scss/layout";
+@import "../scss/global";
+@import "../scss/mixins";
 
 .modal{
     max-height: 80%;
@@ -11,6 +12,10 @@
     outline-offset: .5rem;
     overflow: auto;
     position: relative;
+
+    @include respond(phone){
+        width: 90%;
+    }
 
     &__close{
         position: absolute;

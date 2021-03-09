@@ -1,6 +1,6 @@
 import React from 'react';
 import Authenticate from '../../containers/Authenticate';
-import '../../scss/_layout.scss';
+import './Authenticate_page.scss';
 function Authenticate_page() {
     return (
         <div className='image-background'>

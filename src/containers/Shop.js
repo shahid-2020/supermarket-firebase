@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect, useRef } from 'react';
 import { useHistory, useParams } from 'react-router-dom';
 import { useConsumer } from '../context/AppContext';
@@ -6,9 +7,9 @@ import Header from './Header';
 import Product from '../components/Product';
 import Modal from '../components/Modal';
 import Spinner from './toolbar/Spinner';
-import CustomizedSnackbar from './toolbar/CustomizedSnackbar';
+import Alert from './toolbar/Alert';
 import AddCircleIcon from '@material-ui/icons/AddCircle';
-import '../scss/_layout.scss';
+import '../scss/global.scss';
 function Shop() {
 
     const { store, dispatch } = useConsumer();
@@ -21,9 +22,9 @@ function Shop() {
     const [spinner, setSpinner] = useState(false);
 
     const fetchProducts = () => {
-        // if (!store.auth.userPhoneNumber) {
-        //     return;
-        // }
+        if (!store.auth.userPhoneNumber) {
+            return;
+        }
         setSpinner(true);
         db.getProducts(shopId)
             .then((products) => {
@@ -36,21 +37,20 @@ function Shop() {
 
     useEffect(() => {
         fetchProducts();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     useEffect(() => {
 
-        // if (!store.auth.userPhoneNumber) {
-        //     history.push('/');
-        //     return;
-        // }
+        if (!store.auth.userPhoneNumber) {
+            history.push('/');
+            return;
+        }
 
         if (modal) {
             modalRef.current.onclick = modalHandler;
         }
 
-    }, [history, store, modal, spinner, displayProducts]);
+    }, [store, modal]);
 
     const searchHandler = (e) => {
         let search = e.target.value.trim().toLowerCase();
@@ -105,7 +105,7 @@ function Shop() {
         setSpinner(false);
     };
 
-    const deleteProduct = async (productId) => {
+    const deleteProductHandler = async (productId) => {
         let res = await db.deleteProduct(productId);
         if (res) {
             fetchProducts();
@@ -138,11 +138,11 @@ function Shop() {
             <Header back searchHandler={searchHandler} />
             {modal && <Modal title='Add Product' modalArr={modalArr} ref={modalRef} submitHandler={submitHandler} />}
             <div className='cards'>
-            {(displayProducts.length > 0) ? displayProducts.map((product, i) => (<Product {...product} deleteProduct={deleteProduct} key= {i}/>))
-            : <h3 className='cards-empty'>There is no shop yet.</h3>}
+            {(displayProducts.length > 0) ? displayProducts.map((product, i) => (<Product {...product} deleteProductHandler={deleteProductHandler} key= {i}/>))
+            : <h3 className='cards-empty'>There is no product yet.</h3>}
             </div>
             <AddCircleIcon className='add-icon' onClick={() => setModal(true)} />
-            {store.alert.open && <CustomizedSnackbar message={store.alert.message} severity={store.alert.severity} />}
+            {store.alert.open && <Alert/>}
         </>
     );
 }

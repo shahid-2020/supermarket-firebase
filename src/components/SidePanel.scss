@@ -1,0 +1,11 @@
+@import '../scss/variables';
+
+.sidepanel{
+    height: 85vh;
+    width: 35vw;
+    background-image: linear-gradient(rgba($color-black,.9), rgba($color-black,.9));
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    z-index: 20;
+}

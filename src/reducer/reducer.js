@@ -19,13 +19,6 @@ export default function reducer(state, action) {
                 shops: action.payload
             };
 
-        case 'UPDATE_SHOP':
-            return {
-                ...state,
-                shops: state.shops.map((shop) => (shop.shopId === action.payload.shopId ? { ...shop, ...action.payload.update } : shop))
-
-            };
-
         case 'SET_PRODUCTS':
             return {
                 ...state,

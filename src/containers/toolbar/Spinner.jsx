@@ -1,6 +1,7 @@
 import React from 'react';
 import { PulseLoader } from 'react-spinners';
-import './Spinner.scss';
+import '../../scss/_variables.scss';
+import '../../scss/global.scss';
 
 function Spinner() {
     return (<div className='overlay' id='overlay'>

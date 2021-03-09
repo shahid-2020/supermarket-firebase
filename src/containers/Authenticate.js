@@ -1,24 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
+import { useConsumer } from '../context/AppContext';
 import firebase from '../firebase/firebase';
 import db from '../db/db';
-import { useConsumer } from '../context/AppContext';
 import PhoneNumber from '../components/PhoneNumber';
 import Verification from './Verification';
 import { isMobilePhone } from 'validator';
 import Alert from './toolbar/Alert';
 import Spinner from './toolbar/Spinner';
+import './Authenticate.scss';
 
 function Authenticate() {
 
-    const { dispatch } = useConsumer();
+    const { store, dispatch } = useConsumer();
     const history = useHistory();
 
-    const [obj, setObj] = useState({
-        phoneNumber: '',
-        smsStatus: null,
-        alert: { message: '', alertType: '' }
-    });
+    const [obj, setObj] = useState({ phoneNumber: '', smsStatus: null });
     const [spinner, setSpinner] = useState(null);
 
     const setRecaptchaVerifier = () => {
@@ -45,7 +42,9 @@ function Authenticate() {
         const phoneNumber = `+91${e.target['phoneNumber'].value}`;
 
         if (!isMobilePhone(phoneNumber)) {
-            setObj({ ...obj, alert: { ...obj.alert, message: 'Invalid phone number', alertType: 'error' } });
+
+            dispatch({ type: 'SET_ALERT', payload: { open: true, message: 'Invalid phone number', severity: 'error' } });
+
             setSpinner(false);
             return;
         }
@@ -53,14 +52,14 @@ function Authenticate() {
         try {
             window.confirmationResult = await firebase.auth().signInWithPhoneNumber(phoneNumber, window.recaptchaVerifier);
             resetRecaptchaVerifier();
-            setObj({
-                ...obj, phoneNumber, smsStatus: true,
-                alert: { ...obj.alert, message: 'OTP sent successfully', alertType: 'success' }
-            });
+            setObj({ ...obj, phoneNumber, smsStatus: true });
+
+            dispatch({ type: 'SET_ALERT', payload: { open: true, message: 'SMS sent successfully', severity: 'success' } });
 
         } catch (error) {
             resetRecaptchaVerifier();
-            setObj({ ...obj, alert: { ...obj.alert, message: 'Something went wrong', alertType: 'error' } });
+
+            dispatch({ type: 'SET_ALERT', payload: { open: true, message: 'Something went wrong', severity: 'error' } });
 
         } finally {
             setSpinner(false);
@@ -75,41 +74,41 @@ function Authenticate() {
         try {
             const result = await window.confirmationResult.confirm(code);
             if (!result) {
-                setObj({ ...obj, alert: { ...obj.alert, message: 'Invalid OTP', alertType: 'error' } });
+                dispatch({ type: 'SET_ALERT', payload: { open: true, message: 'Invalid OTP', severity: 'error' } });
                 return;
             }
             const user = await db.getUser(obj.phoneNumber);
 
             if (user) {
                 dispatch({ type: 'SET_AUTH', payload: user });
-                history.push('/seller');
+                history.push(`/seller`);
                 return;
             }
 
             history.push(`/form`);
         } catch (error) {
-            setObj({ ...obj, alert: { ...obj.alert, message: error, alertType: 'error' } });
             setSpinner(false);
+            dispatch({ type: 'SET_ALERT', payload: { open: true, message: 'Something went wrong', severity: 'error' } });
         }
     };
 
-    const toggleSmsStatus = () => setObj({ ...obj, smsStatus: !obj.smsStatus, alert: { ...obj.alert, message: '', alertType: '' } });
+    const toggleSmsStatus = () => {
+        setObj({ ...obj, smsStatus: !obj.smsStatus });
+    };
 
 
     return (
         <>
             {spinner && <Spinner />}
             {obj.smsStatus ?
-                (<>
-                    <Alert message={obj.alert.message} alertType={obj.alert.alertType} />
+                (<div className='sidebar'>
                     <Verification phoneNumber={obj.phoneNumber} resendHandler={toggleSmsStatus} submitHandler={verifyOTP} />
-                </>)
+                </div>)
                 :
-                (<>
-
-                    <Alert message={obj.alert.message} alertType={obj.alert.alertType} />
+                (<div className='sidebar'>
                     <PhoneNumber btnId='requestOtp' submitHandler={requestOTP} />
-                </>)}
+                </div>)}
+            {store.alert.open && <Alert />}
         </>
     );
 }

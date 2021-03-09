@@ -1,19 +1,43 @@
-import React, { useState, useEffect } from 'react';
+/* eslint-disable react-hooks/exhaustive-deps */
+import React, { useEffect } from 'react';
+import { useConsumer } from '../../context/AppContext';
+import CheckCircleOutlineIcon from '@material-ui/icons/CheckCircleOutline';
+import ErrorOutlineIcon from '@material-ui/icons/ErrorOutline';
 import './Alert.scss';
 
-function Alert({ message, alertType }) {
-    const [display, setDisplay] = useState(false);
+function Alert() {
+    const { store, dispatch } = useConsumer();
 
-    useEffect(() => { 
-        message?setDisplay(true):setDisplay(false)
-    },[message])
-    
+    const close = () => {
+        dispatch({ type: 'RESET_ALERT' });
+    };
+
+    useEffect(() => {
+
+        const timer = setTimeout(() => {
+            close();
+        }, 6000);
+
+        return () => timer;
+
+    }, []);
+
+    const iconStyle = {
+        fontSize:20
+    };
+
     return (
-        display && <p className={`alert alert-${alertType}`}>
-             <span className='alert__message'>{message}</span>
-             <span className='alert__close' onClick ={() => setDisplay(false)} >&#10006;</span>
-             </p>
-    )
+        <div className={`alert alert-${store.alert.severity}`}>
+            <div className='alert__group'>
+                <span className='alert__group-icon'>
+                    {store.alert.severity === 'success' && <CheckCircleOutlineIcon style={iconStyle}/>}
+                    {store.alert.severity === 'error' && <ErrorOutlineIcon style={iconStyle}/>}
+                </span>
+                <p className='alert__group-message'>{store.alert.message}</p>
+                </div>
+            <span className='alert__close' onClick={close} >&#10006;</span>
+        </div>
+    );
 }
 
 export default Alert;

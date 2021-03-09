@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect, useRef } from 'react';
 import { useHistory } from 'react-router-dom';
 import { useConsumer } from '../context/AppContext';
@@ -6,9 +7,9 @@ import Header from './Header';
 import Modal from '../components/Modal';
 import ShopCard from '../components/ShopCard';
 import Spinner from './toolbar/Spinner';
-import CustomizedSnackbar from './toolbar/CustomizedSnackbar';
+import Alert from './toolbar/Alert';
 import AddCircleIcon from '@material-ui/icons/AddCircle';
-import '../scss/_layout.scss';
+import '../scss/global.scss';
 
 const modalArr = [
     { type: 'text', name: 'shopName', inputClass: 'form__input', placeholder: 'Shop Name', required: true, label: 'Shop Name', labelClass: 'form__label' },
@@ -43,45 +44,21 @@ function Seller() {
     };
 
     useEffect(() => {
+        fetchShops();
+    }, []);
+
+    useEffect(() => {
 
         if (!store.auth.userPhoneNumber) {
             history.push('/');
             return;
         }
-
+        
         if (modal) {
             modalRef.current.onclick = modalHandler;
         }
-
-        // let latestShopsArr = [];
-        // const unsubscribe = firestore.collection('users').doc(store.auth.userPhoneNumber).collection('seller')
-        //     .onSnapshot((querySnapshot) => {
-        //         querySnapshot.forEach((doc) => {
-        //             latestShopsArr.push(doc.data());
-        //         });
-        //         dispatch({ type: 'SET_SHOPS', payload: latestShopsArr });
-        //         setDisplayShops(latestShopsArr);
-        //         latestShopsArr = [];
-
-        //         if (spinner) {
-        //             setSpinner(false);
-        //         }
-        //     }, (error) => {
-        //         if (spinner) {
-        //             setSpinner(false);
-        //         }
-        //     });
-
-        // return () => unsubscribe();
-
-
-    }, [history, store, modal]);
-
-    useEffect(() => {
-        setSpinner(true);
-        fetchShops();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+        
+    }, [modal]);
 
 
     const searchHandler = (e) => {
@@ -122,17 +99,17 @@ function Seller() {
         setModal(false);
     };
 
-    const switchHandler = async (e, shopId) => {
-        console.log(e.target.checked);
-        if (e.target.name === 'shopOpen') {
-            await db.updateShop(store.auth.userPhoneNumber, shopId, { shopOpen: e.target.checked });
-        } else if (e.target.name === 'shopDeliver') {
-            await db.updateShop(store.auth.userPhoneNumber, shopId, { shopDeliver: e.target.checked });
+    // const switchHandler = async (e, shopId) => {
+    //     console.log(e.target.checked);
+    //     if (e.target.name === 'shopOpen') {
+    //         await db.updateShop(store.auth.userPhoneNumber, shopId, { shopOpen: e.target.checked });
+    //     } else if (e.target.name === 'shopDeliver') {
+    //         await db.updateShop(store.auth.userPhoneNumber, shopId, { shopDeliver: e.target.checked });
 
-        }
-    };
+    //     }
+    // };
 
-    const deleteHandler = async (shopId) => {
+    const deleteShopHandler = async (shopId) => {
         let res = await db.deleteShop(store.auth.userPhoneNumber, shopId);
 
         if (res) {
@@ -149,12 +126,12 @@ function Seller() {
             {spinner && <Spinner />}
             <Header searchHandler={searchHandler} />
             <div className='cards'>
-                {(displayShops.length > 0) ? displayShops.map((ele, i) => (<ShopCard {...ele} switchHandler={switchHandler} deleteShop={deleteHandler} key={i} />))
+                {(displayShops.length > 0) ? displayShops.map((ele, i) => (<ShopCard {...ele} deleteShopHandler={deleteShopHandler} key={i} />))
                     : <h3 className='cards-empty'>There is no shop yet.</h3>}
             </div>
             {modal && <Modal title='Create Shop' modalArr={modalArr} ref={modalRef} submitHandler={submitHandler} />}
             <AddCircleIcon className='add-icon' onClick={() => setModal(true)} />
-            {store.alert.open && <CustomizedSnackbar message={store.alert.message} severity={store.alert.severity} />}
+            {store.alert.open && <Alert/>}
         </>
     );
 }

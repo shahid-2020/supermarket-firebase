@@ -7,18 +7,18 @@ import ShoppingCartIcon from '@material-ui/icons/ShoppingCart';
 import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos';
 import './Header.scss';
 
-function Header({ back, searchHandler, cartHandler, settingHandler }) {
+function Header({ back, searchHandler, accountHandler, cartHandler, settingHandler }) {
     const history = useHistory();
     return (
         <header className='header'>
             <div className='header__start'>
-                {back && <ArrowBackIosIcon fontSize='large' style={{ color: 'white', cursor: 'pointer' }} onClick={() => history.goBack()} />}
+                {back && <ArrowBackIosIcon className='header__back-icon' fontSize='large' style={{ color: 'white', cursor: 'pointer' }} onClick={() => history.goBack()} />}
                 <h1 className='header__logo'>
                     Supermarket
                 </h1>
             </div>
 
-            <div className='header__search'>
+            {searchHandler && <div className='header__search'>
                 <input
                     type='text'
                     id='header__search-input'
@@ -29,10 +29,13 @@ function Header({ back, searchHandler, cartHandler, settingHandler }) {
                 <label htmlFor='header__search-input' className='header__search-label'>
                     <SearchIcon fontSize='large' style={{ cursor: 'pointer' }} />
                 </label>
-            </div>
+            </div>}
 
             <div className='header__icons'>
-                <AccountCircleIcon fontSize='large' style={{ color: 'white', cursor: 'pointer' }} />
+
+                {accountHandler &&
+                    <AccountCircleIcon fontSize='large' style={{ color: 'white', cursor: 'pointer' }} onClick={accountHandler} />}
+
                 {cartHandler &&
                     <ShoppingCartIcon fontSize='large' style={{ color: 'white', cursor: 'pointer' }} onClick={cartHandler} />}
 

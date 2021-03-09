@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import '../scss/_layout.scss';
+import '../scss/global.scss';
 import '../scss/_utils.scss';
 
 function Verification({ phoneNumber, resendHandler, submitHandler }) {
@@ -19,7 +19,7 @@ function Verification({ phoneNumber, resendHandler, submitHandler }) {
     };
 
     return (
-        <div className='sidebar'>
+        <>
             <div className='heading'>
                 <h2 className='heading__main u-margin-bottom-small'>
                     Enter the code that was sent to
@@ -61,7 +61,7 @@ function Verification({ phoneNumber, resendHandler, submitHandler }) {
 
                 </form>
             </div>
-        </div>
+        </>
     );
 }
 

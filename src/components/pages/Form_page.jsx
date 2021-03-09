@@ -1,10 +1,13 @@
 import React from 'react';
 import Form from '../../containers/Form';
-import '../../scss/_layout.scss';
+import '../../scss/global.scss';
+import './Form_page.scss';
 function Form_page() {
     return (
         <div className='image-background'>
-            <Form/>
+            <div className='sidebar'>
+                <Form />
+            </div>
         </div>
     );
 }

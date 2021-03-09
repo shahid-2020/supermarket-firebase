@@ -4,7 +4,7 @@ import firebase from '../firebase/firebase';
 import db from '../db/db';
 import { useConsumer } from '../context/AppContext';
 import Input from '../components/Input';
-import '../scss/_layout.scss';
+import '../scss/global.scss';
 import '../scss/_utils.scss';
 function Form() {
 
@@ -43,7 +43,7 @@ function Form() {
     };
 
     return (
-        <div className='sidebar'>
+        <>
             <div className='heading'>
                 <h2 className='heading__main u-margin-bottom-small'>
                     Hi, there..
@@ -106,7 +106,7 @@ function Form() {
                         value='Save' />
                 </form>
             </div>
-        </div>
+        </>
     );
 }
 

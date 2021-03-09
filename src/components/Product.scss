@@ -1,4 +1,6 @@
 @import '../scss/variables';
+@import '../scss/mixins';
+
 .product{
     height: 40rem;
     width: 30rem;
@@ -7,6 +9,15 @@
     border-left: 1rem solid $color-primary;
     box-shadow: $box-shadow;
     transition: all .5s;
+
+    @include respond(phone){
+        height: 35rem;
+        width: 20rem;
+        margin: 1rem .5rem;
+        padding: 1rem;
+        border-left: .5rem solid $color-primary;
+    }
+    
 
     &:hover{
         transform: scale(1.1);
@@ -23,21 +34,18 @@
         display: inline-block;
         margin: .5rem auto;
         height: 60%;
-
     }
 
     &__group{
         margin: .5rem 0;
         display: flex;
-        justify-content: space-around;
+        justify-content: space-between;
 
     }
 }
 
 .product-delete-icon{
+    display: inline-block;
     color: $color-tertiary;
-    margin: 0 2rem;
-    transform: translateY(.5rem);
     cursor: pointer;
-    z-index: -10;
 }

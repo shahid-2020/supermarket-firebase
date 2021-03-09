@@ -1,25 +1,12 @@
 @import "../../scss/variables";
-.error404_page{
-    display: flex;
-    justify-content: center;
-    align-items: center;
+@import "../../scss/mixins";
+.error_page{
+    height: 100vh;
+    background-image: url('../../assets/error_404.jpg');
+    background-position:center;
+    background-repeat: no-repeat;
 
-    &__container{
-        height: 40%;
-        width: 40%;
-        padding: 2rem;
-        background-color: $color-grey-light-1;
-        box-shadow: $box-shadow;
-    }
-
-    &__header{
-        font-size: 3rem;
-        text-align: center;
-        margin: 2rem 0;
-    }
-
-    &__text{
-        font-size: 2.5rem;
-        color: $color-grey-dark-1;
+    @include respond(phone) {
+        background-size: 100%;
     }
 }

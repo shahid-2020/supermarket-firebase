@@ -1,12 +1,12 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import Input from './Input';
-import '../scss/_layout.scss';
+import '../scss/global.scss';
 import '../scss/_utils.scss';
 
 function PhoneNumber({ btnId, submitHandler }) {
     return (
-        <div className='sidebar'>
+        <>
             <div className='heading'>
                 <h2 className='heading__main u-margin-bottom-small'>
                     Enter your phone number for verification.
@@ -36,12 +36,12 @@ function PhoneNumber({ btnId, submitHandler }) {
                         value='Request otp' />
 
                     <div className='form__info'>
-                        By continuing, you agree to Super Market's <Link to={'#'}>Terms of Use</Link> and <Link to={'#'}>Privacy Policy</Link>.
+                        By continuing, you agree to Super Market's <Link to={'/page-under-construction'}>Terms of Use</Link> and <Link to={'/page-under-construction'}>Privacy Policy</Link>.
                 </div>
 
                 </form>
             </div>
-        </div>
+        </>
     );
 }
 

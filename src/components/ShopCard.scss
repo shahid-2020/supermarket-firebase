@@ -1,4 +1,5 @@
 @import '../scss/variables';
+@import '../scss/mixins';
 .card{
     width: 40%;
     margin: 2rem 0;
@@ -6,6 +7,10 @@
     border-left: 1rem solid $color-primary;
     box-shadow: $box-shadow;
     transition: all .5s;
+
+    @include respond(phone){
+        width: 80%;
+    }
 
     &:hover{
         transform: scale(1.1);

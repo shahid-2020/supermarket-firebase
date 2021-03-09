@@ -40,7 +40,7 @@ const AntSwitch = withStyles((theme) => ({
 }))(Switch);
 
 
-function ShopCard({ shopName, shopEmail, shopPhoneNumber, shopOpen, shopDeliver, shopId, switchHandler, deleteShop }) {
+function ShopCard({ shopName, shopEmail, shopPhoneNumber, shopOpen, shopDeliver, shopId, deleteShopHandler }) {
   const location = useLocation();
   return (
     <div className='card'>
@@ -71,7 +71,7 @@ function ShopCard({ shopName, shopEmail, shopPhoneNumber, shopOpen, shopDeliver,
         Enter Shop
       </Link>
 
-      <DeleteIcon fontSize='large' className='delete-icon' onClick={() => deleteShop(shopId)} />
+      <DeleteIcon fontSize='large' className='delete-icon' onClick={() => deleteShopHandler(shopId)} />
     </div>
   );
 }
