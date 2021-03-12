@@ -40,7 +40,7 @@ const AntSwitch = withStyles((theme) => ({
 }))(Switch);
 
 
-function ShopCard({ shopName, shopEmail, shopPhoneNumber, shopOpen, shopDeliver, shopId, deleteShopHandler }) {
+function ShopCard({ shopName, shopEmail, shopPhoneNumber, shopLandmark, shopCity, shopState, shopOpen, shopDeliver, shopId, toggleHandler, deleteShopHandler }) {
   const location = useLocation();
   return (
     <div className='card'>
@@ -58,13 +58,28 @@ function ShopCard({ shopName, shopEmail, shopPhoneNumber, shopOpen, shopDeliver,
       </div>
 
       <div className='card__group'>
+        <h3 className='card__group-main'>Landmark</h3>
+        <p className='card__group-sub'>{shopLandmark}</p>
+      </div>
+
+      <div className='card__group'>
+        <h3 className='card__group-main'>City</h3>
+        <p className='card__group-sub'>{shopCity}</p>
+      </div>
+
+      <div className='card__group'>
+        <h3 className='card__group-main'>State</h3>
+        <p className='card__group-sub'>{shopState}</p>
+      </div>
+
+      <div className='card__group'>
         <h3 className='card__group-main'>Open</h3>
-        <AntSwitch checked={shopOpen} name='shopOpen' onChange={(e) => false} />
+        <AntSwitch checked={shopOpen} name='shopOpen' onChange={(e) => {toggleHandler(e, shopId)}} />
       </div>
 
       <div className='card__group'>
         <h3 className='card__group-main'>Deliver</h3>
-        <AntSwitch checked={shopDeliver} name='shopDeliver' onChange={(e) => false} />
+        <AntSwitch checked={shopDeliver} name='shopDeliver' onChange={(e) => toggleHandler(e, shopId)} />
       </div>
 
       <Link to={`${location.pathname}/${shopId}`}>

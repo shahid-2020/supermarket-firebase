@@ -4,6 +4,8 @@ import { useHistory } from 'react-router-dom';
 import { useConsumer } from '../context/AppContext';
 import db from '../db/db';
 import Header from './Header';
+import Profile from '../components/Profile';
+import SidePanel from '../components/SidePanel';
 import Modal from '../components/Modal';
 import ShopCard from '../components/ShopCard';
 import Spinner from './toolbar/Spinner';
@@ -26,6 +28,8 @@ function Seller() {
     const { store, dispatch } = useConsumer();
     const history = useHistory();
     const modalRef = useRef(null);
+    const [profile, setProfile] = useState(false);
+    const [sidePanel, setSidePanel] = useState(false);
     const [displayShops, setDisplayShops] = useState([]);
     const [modal, setModal] = useState(false);
     const [spinner, setSpinner] = useState(false);
@@ -72,6 +76,22 @@ function Seller() {
         }
     };
 
+    const profileHandler = (e) => {
+        setSidePanel(false);
+        setProfile(profile => !profile);
+    };
+
+    const settingHandler = (e) => {
+        setProfile(false);
+        setSidePanel(sidePanel => !sidePanel);
+    };
+
+    const switchHandler = async (e) => {
+        const update = ((store.auth.userType === 'seller') ? 'buyer' : 'seller');
+        await db.updateUser(store.auth.userPhoneNumber, update);
+        history.push(`/${update}`);
+    };
+
     const modalHandler = (e) => {
         if (e.target.className === 'overlay' || e.target.className === 'modal__close') {
             setModal(false);
@@ -99,15 +119,16 @@ function Seller() {
         setModal(false);
     };
 
-    // const switchHandler = async (e, shopId) => {
-    //     console.log(e.target.checked);
-    //     if (e.target.name === 'shopOpen') {
-    //         await db.updateShop(store.auth.userPhoneNumber, shopId, { shopOpen: e.target.checked });
-    //     } else if (e.target.name === 'shopDeliver') {
-    //         await db.updateShop(store.auth.userPhoneNumber, shopId, { shopDeliver: e.target.checked });
+    const toggleHandler = async (e, shopId) => {
+        if (e.target.name === 'shopOpen') {
+            await db.updateShop(store.auth.userPhoneNumber, shopId, { shopOpen: e.target.checked });
+            setDisplayShops(displayShops.map(shop => (shop.shopId === shopId ? {...shop, shopOpen: !e.target.checked}: shop)));
 
-    //     }
-    // };
+        } else if (e.target.name === 'shopDeliver') {
+            await db.updateShop(store.auth.userPhoneNumber, shopId, { shopDeliver: e.target.checked });
+            setDisplayShops(displayShops.map(shop => (shop.shopId === shopId ? {...shop, shopDeliver: !e.target.checked}: shop)));
+        }
+    };
 
     const deleteShopHandler = async (shopId) => {
         let res = await db.deleteShop(store.auth.userPhoneNumber, shopId);
@@ -124,9 +145,11 @@ function Seller() {
     return (
         <>
             {spinner && <Spinner />}
-            <Header searchHandler={searchHandler} />
+            <Header searchHandler={searchHandler} profileHandler={profileHandler} settingHandler={settingHandler} />
+            {profile && <Profile/>}
+            {sidePanel && <SidePanel switchHandler={switchHandler}/>}
             <div className='cards'>
-                {(displayShops.length > 0) ? displayShops.map((ele, i) => (<ShopCard {...ele} deleteShopHandler={deleteShopHandler} key={i} />))
+                {(displayShops.length > 0) ? displayShops.map((ele, i) => (<ShopCard {...ele} deleteShopHandler={deleteShopHandler} toggleHandler={toggleHandler} key={i} />))
                     : <h3 className='cards-empty'>There is no shop yet.</h3>}
             </div>
             {modal && <Modal title='Create Shop' modalArr={modalArr} ref={modalRef} submitHandler={submitHandler} />}

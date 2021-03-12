@@ -3,7 +3,7 @@ import HighlightOffIcon from '@material-ui/icons/HighlightOff';
 import './Product.scss';
 
 
-function Product({ shopId, productId, imageUrl, productName, productManufacturer, productType, productPrice, deleteProduct }) {
+function Product({ shopId, productId, imageUrl, productName, productManufacturer, productType, productPrice, deleteProductHandler }) {
     return (
         <div className='product'>
 
@@ -22,7 +22,7 @@ function Product({ shopId, productId, imageUrl, productName, productManufacturer
 
             <div className='product__group'>
             <h3>{productType}</h3>
-            <HighlightOffIcon fontSize='large' className='product-delete-icon' onClick={() => deleteProduct(productId)} />
+            <HighlightOffIcon fontSize='large' className='product-delete-icon' onClick={() => deleteProductHandler(productId)} />
             </div>
 
         </div>

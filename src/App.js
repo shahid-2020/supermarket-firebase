@@ -7,7 +7,7 @@ import Form_page from './components/pages/Form_page';
 import Seller_page from './components/pages/Seller_page';
 import Shop_page from './components/pages/Shop_page';
 
-
+import Test from './containers/Header.jsx';
 
 function App() {
     return (
@@ -18,6 +18,7 @@ function App() {
                     <Route path="/form" component={Form_page} />
                     <Route path="/seller/:shopId" component={Shop_page}/>
                     <Route path="/seller" component={Seller_page}/>
+                    <Route path='/test' component={Test} />
                     <Route path='/page-under-construction' component={Construction_page} />
                     <Route component={Error404_page} />
                 </Switch>

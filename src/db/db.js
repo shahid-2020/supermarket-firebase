@@ -32,7 +32,18 @@ class Database {
         } catch (error) {
             throw error;
         }
+    }
 
+    async updateUser(userId, userData) {
+        if (!userId && !userData) {
+            throw new Error('Arguments missing to fetch data');
+        }
+        try {
+            await this.db.collection('users').doc(userId).update(userData);
+            return true;
+        } catch (error) {
+            throw error;
+        }
     }
 
     async setShop(userId, shopData) {

@@ -1,5 +1,19 @@
 export default function reducer(state, action) {
     switch (action.type) {
+        case 'RESET_STORE':
+            return {
+                auth: {
+                    userId: null,
+                    userName: null,
+                    userPhoneNumber: null,
+                    userEmail: null,
+                    userType: null
+                },
+                shops: [],
+                products: [],
+                alert: { open: false, message: null, severity: null }
+            };
+
         case 'SET_AUTH':
             return {
                 ...state,

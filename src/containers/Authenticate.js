@@ -81,7 +81,7 @@ function Authenticate() {
 
             if (user) {
                 dispatch({ type: 'SET_AUTH', payload: user });
-                history.push(`/seller`);
+                history.push(`/${user.userType}`);
                 return;
             }
 

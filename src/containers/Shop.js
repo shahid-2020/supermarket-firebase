@@ -4,6 +4,8 @@ import { useHistory, useParams } from 'react-router-dom';
 import { useConsumer } from '../context/AppContext';
 import db from '../db/db';
 import Header from './Header';
+import Profile from '../components/Profile';
+import SidePanel from '../components/SidePanel';
 import Product from '../components/Product';
 import Modal from '../components/Modal';
 import Spinner from './toolbar/Spinner';
@@ -16,8 +18,10 @@ function Shop() {
     const history = useHistory();
     const { shopId } = useParams();
     const modalRef = useRef(null);
-    const [file, setFile] = useState(null);
+    const [profile, setProfile] = useState(false);
+    const [sidePanel, setSidePanel] = useState(false);
     const [displayProducts, setDisplayProducts] = useState([]);
+    const [file, setFile] = useState(null);
     const [modal, setModal] = useState(false);
     const [spinner, setSpinner] = useState(false);
 
@@ -63,6 +67,22 @@ function Shop() {
         }
     };
 
+    const settingHandler = (e) => {
+        setProfile(false);
+        setSidePanel(sidePanel => !sidePanel);
+    };
+
+    const profileHandler = (e) => {
+        setSidePanel(false);
+        setProfile(profile => !profile);
+    };
+
+    const switchHandler = async (e) => {
+        const update = ((store.auth.userType === 'seller') ? 'buyer' : 'seller');
+        await db.updateUser(store.auth.userPhoneNumber, {userType:update});
+        history.push(`/${update}`);
+    };
+
     const modalHandler = (e) => {
         if (e.target.className === 'overlay' || e.target.className === 'modal__close') {
             setModal(false);
@@ -106,13 +126,15 @@ function Shop() {
     };
 
     const deleteProductHandler = async (productId) => {
+        setSpinner(true);
         let res = await db.deleteProduct(productId);
         if (res) {
             fetchProducts();
-            dispatch({ type: 'SET_ALERT', payload: { open: true, message: 'Shop deleted', severity: 'error' } });
+            dispatch({ type: 'SET_ALERT', payload: { open: true, message: 'Product deleted', severity: 'error' } });
         } else {
             dispatch({ type: 'SET_ALERT', payload: { open: true, message: 'Something went wrong', severity: 'error' } });
         }
+        setSpinner(true);
     };
 
 
@@ -135,14 +157,16 @@ function Shop() {
     return (
         <>
             {spinner && <Spinner />}
-            <Header back searchHandler={searchHandler} />
+            <Header back searchHandler={searchHandler} profileHandler={profileHandler} settingHandler={settingHandler} />
+            {profile && <Profile />}
+            {sidePanel && <SidePanel switchHandler={switchHandler} />}
             {modal && <Modal title='Add Product' modalArr={modalArr} ref={modalRef} submitHandler={submitHandler} />}
             <div className='cards'>
-            {(displayProducts.length > 0) ? displayProducts.map((product, i) => (<Product {...product} deleteProductHandler={deleteProductHandler} key= {i}/>))
-            : <h3 className='cards-empty'>There is no product yet.</h3>}
+                {(displayProducts.length > 0) ? displayProducts.map((product, i) => (<Product {...product} deleteProductHandler={deleteProductHandler} key={i} />))
+                    : <h3 className='cards-empty'>There is no product yet.</h3>}
             </div>
             <AddCircleIcon className='add-icon' onClick={() => setModal(true)} />
-            {store.alert.open && <Alert/>}
+            {store.alert.open && <Alert />}
         </>
     );
 }

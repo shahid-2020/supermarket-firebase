@@ -11,9 +11,9 @@
     transition: all .5s;
 
     @include respond(phone){
-        height: 35rem;
-        width: 20rem;
-        margin: 1rem .5rem;
+        height: 40rem;
+        width: 90%;
+        margin: 1rem auto;
         padding: 1rem;
         border-left: .5rem solid $color-primary;
     }
@@ -34,6 +34,9 @@
         display: inline-block;
         margin: .5rem auto;
         height: 60%;
+        width: 100%;
+        object-fit: cover;
+        overflow-x: hidden;
     }
 
     &__group{

@@ -12,9 +12,9 @@ function Form() {
     const history = useHistory();
 
     const [auth, setAuth] = useState(null);
-    
+
     useEffect(() => {
-        if(!auth){
+        if (!auth) {
             let currentUser = firebase.auth().currentUser;
             if (!currentUser) {
                 history.goBack();
@@ -22,24 +22,24 @@ function Form() {
             }
             setAuth({ ...auth, userPhoneNumber: currentUser.phoneNumber, userId: currentUser.uid });
         }
-    },[history, auth]);
+    }, [history, auth]);
 
     useEffect(() => {
 
-        if(auth && auth.userPhoneNumber && auth.userId && auth.userName && auth.userEmail && auth.userType){
+        if (auth && auth.userPhoneNumber && auth.userId && auth.userName && auth.userEmail && auth.userType) {
             dispatch({ type: 'SET_AUTH', payload: auth });
             db.setUser(auth)
-            .then(res => (res && history.push('/seller')));
+                .then(res => (res && history.push(`/${auth.userType}`)));
         }
-        
-    }, [auth,dispatch,history])
+
+    }, [auth, dispatch, history]);
     const submitHandler = (e) => {
         e.preventDefault();
         const userName = e.target['name'].value;
         const userEmail = e.target['email'].value;
         const userType = e.target['type'].value;
         setAuth({ ...auth, userName, userEmail, userType });
-        
+
     };
 
     return (

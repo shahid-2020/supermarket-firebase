@@ -7,7 +7,7 @@ import ShoppingCartIcon from '@material-ui/icons/ShoppingCart';
 import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos';
 import './Header.scss';
 
-function Header({ back, searchHandler, accountHandler, cartHandler, settingHandler }) {
+function Header({ back, searchHandler, profileHandler, cartHandler, settingHandler }) {
     const history = useHistory();
     return (
         <header className='header'>
@@ -33,8 +33,8 @@ function Header({ back, searchHandler, accountHandler, cartHandler, settingHandl
 
             <div className='header__icons'>
 
-                {accountHandler &&
-                    <AccountCircleIcon fontSize='large' style={{ color: 'white', cursor: 'pointer' }} onClick={accountHandler} />}
+                {profileHandler &&
+                    <AccountCircleIcon fontSize='large' style={{ color: 'white', cursor: 'pointer' }} onClick={profileHandler} />}
 
                 {cartHandler &&
                     <ShoppingCartIcon fontSize='large' style={{ color: 'white', cursor: 'pointer' }} onClick={cartHandler} />}
