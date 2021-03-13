@@ -2,6 +2,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useHistory, useParams } from 'react-router-dom';
 import { useConsumer } from '../context/AppContext';
+import {firestore} from '../firebase/firebase';
 import db from '../db/db';
 import Header from './Header';
 import Profile from '../components/Profile';
@@ -25,22 +26,20 @@ function Shop() {
     const [modal, setModal] = useState(false);
     const [spinner, setSpinner] = useState(false);
 
-    const fetchProducts = () => {
-        if (!store.auth.userPhoneNumber) {
-            return;
-        }
-        setSpinner(true);
-        db.getProducts(shopId)
-            .then((products) => {
-                dispatch({ type: 'SET_PRODUCTS', payload: products });
-                setDisplayProducts(products);
-                setSpinner(false);
-            });
-    };
-
 
     useEffect(() => {
-        fetchProducts();
+        const unsubscribe = firestore.collection('products').where('shopId', '==', shopId)
+            .onSnapshot((querySnapshot) => {
+                let products = [];
+                querySnapshot.forEach((doc) => {
+                    products.push(doc.data());
+                });
+    
+                dispatch({ type: 'SET_PRODUCTS', payload: products });
+                setDisplayProducts(products);
+            });
+
+            return () => unsubscribe();
     }, []);
 
     useEffect(() => {
@@ -78,9 +77,9 @@ function Shop() {
     };
 
     const switchHandler = async (e) => {
-        const update = ((store.auth.userType === 'seller') ? 'buyer' : 'seller');
-        await db.updateUser(store.auth.userPhoneNumber, {userType:update});
-        history.push(`/${update}`);
+        const userType = ((store.auth.userType === 'seller') ? 'buyer' : 'seller');
+        await db.updateUser(store.auth.userPhoneNumber, { userType: userType });
+        history.push(`/${userType}`);
     };
 
     const modalHandler = (e) => {
@@ -110,14 +109,14 @@ function Shop() {
 
         setModal(false);
         setSpinner(true);
-        const productName = e.target['productName'].value;
-        const productManufacturer = e.target['productManufacturer'].value;
-        const productType = e.target['productType'].value;
-        const productPrice = e.target['productPrice'].value;
-
+        const productName = e.target['productName'].value.toLowerCase();
+        const productManufacturer = e.target['productManufacturer'].value.toLowerCase();
+        const productType = e.target['productType'].value.toLowerCase();
+        let productPrice = e.target['productPrice'].value;
+        productPrice = (parseInt(productPrice) > 0) ? productPrice: '0';
         let res = await db.setProduct(file, { shopId, productName, productManufacturer, productType, productPrice });
         if (res) {
-            fetchProducts();
+        
             dispatch({ type: 'SET_ALERT', payload: { open: true, message: 'Product added successfully', severity: 'success' } });
         } else {
             dispatch({ type: 'SET_ALERT', payload: { open: true, message: 'Unable to add product', severity: 'error' } });
@@ -129,12 +128,11 @@ function Shop() {
         setSpinner(true);
         let res = await db.deleteProduct(productId);
         if (res) {
-            fetchProducts();
-            dispatch({ type: 'SET_ALERT', payload: { open: true, message: 'Product deleted', severity: 'error' } });
+            dispatch({ type: 'SET_ALERT', payload: { open: true, message: 'Product deleted', severity: 'success' } });
         } else {
             dispatch({ type: 'SET_ALERT', payload: { open: true, message: 'Something went wrong', severity: 'error' } });
         }
-        setSpinner(true);
+        setSpinner(false);
     };
 
 

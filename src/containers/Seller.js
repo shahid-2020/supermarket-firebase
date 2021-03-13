@@ -2,6 +2,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useHistory } from 'react-router-dom';
 import { useConsumer } from '../context/AppContext';
+import {firestore} from '../firebase/firebase';
 import db from '../db/db';
 import Header from './Header';
 import Profile from '../components/Profile';
@@ -12,16 +13,6 @@ import Spinner from './toolbar/Spinner';
 import Alert from './toolbar/Alert';
 import AddCircleIcon from '@material-ui/icons/AddCircle';
 import '../scss/global.scss';
-
-const modalArr = [
-    { type: 'text', name: 'shopName', inputClass: 'form__input', placeholder: 'Shop Name', required: true, label: 'Shop Name', labelClass: 'form__label' },
-    { type: 'email', name: 'shopEmail', inputClass: 'form__input', placeholder: 'Shop Email', required: true, label: 'Shop Email', labelClass: 'form__label' },
-    { type: 'text', name: 'shopPhoneNumber', inputClass: 'form__input', placeholder: 'Shop Phone Number', required: true, label: 'Shop Phone Number', labelClass: 'form__label' },
-    { type: 'text', name: 'shopLandmark', inputClass: 'form__input', placeholder: 'Shop Landmark', label: 'Shop Landmark', labelClass: 'form__label' },
-    { type: 'text', name: 'shopCity', inputClass: 'form__input', placeholder: 'Shop City', label: 'Shop City', labelClass: 'form__label' },
-    { type: 'text', name: 'shopState', inputClass: 'form__input', placeholder: 'Shop State', label: 'Shop State', labelClass: 'form__label' },
-    { type: 'submit', name: 'ShopCreate', inputClass: 'btn btn--primary', value: 'Create' }
-];
 
 function Seller() {
 
@@ -34,21 +25,19 @@ function Seller() {
     const [modal, setModal] = useState(false);
     const [spinner, setSpinner] = useState(false);
 
-    const fetchShops = () => {
-        if (!store.auth.userPhoneNumber) {
-            return;
-        }
-        setSpinner(true);
-        db.getShops(store.auth.userPhoneNumber)
-            .then((shops) => {
-                dispatch({ type: 'SET_SHOPS', payload: shops });
-                setDisplayShops(shops);
-                setSpinner(false);
-            });
-    };
 
     useEffect(() => {
-        fetchShops();
+        const unsubscribe = firestore.collection('users').doc(store.auth.userPhoneNumber).collection('seller')
+        .onSnapshot((querySnapshot) => {
+            let shops = [];
+            querySnapshot.forEach((doc) => {
+                shops.push(doc.data());
+            });
+            dispatch({ type: 'SET_SHOPS', payload: shops });
+            setDisplayShops(shops);
+        });
+
+        return () => unsubscribe();
     }, []);
 
     useEffect(() => {
@@ -57,11 +46,11 @@ function Seller() {
             history.push('/');
             return;
         }
-        
+
         if (modal) {
             modalRef.current.onclick = modalHandler;
         }
-        
+
     }, [modal]);
 
 
@@ -87,9 +76,9 @@ function Seller() {
     };
 
     const switchHandler = async (e) => {
-        const update = ((store.auth.userType === 'seller') ? 'buyer' : 'seller');
-        await db.updateUser(store.auth.userPhoneNumber, update);
-        history.push(`/${update}`);
+        const userType = ((store.auth.userType === 'seller') ? 'buyer' : 'seller');
+        await db.updateUser(store.auth.userPhoneNumber, { userType: userType });
+        history.push(`/${userType}`);
     };
 
     const modalHandler = (e) => {
@@ -100,61 +89,69 @@ function Seller() {
 
     const submitHandler = async (e) => {
         e.preventDefault();
-        const shopName = e.target['shopName'].value;
-        const shopEmail = e.target['shopEmail'].value;
+        setModal(false);
+        setSpinner(true);
+        const shopName = e.target['shopName'].value.toLowerCase();
+        const shopEmail = e.target['shopEmail'].value.toLowerCase();
         const shopPhoneNumber = e.target['shopPhoneNumber'].value;
-        const shopLandmark = e.target['shopLandmark'].value;
-        const shopCity = e.target['shopCity'].value;
-        const shopState = e.target['shopState'].value;
+        const shopLandmark = e.target['shopLandmark'].value.toLowerCase();
+        const shopCity = e.target['shopCity'].value.toLowerCase();
+        const shopState = e.target['shopState'].value.toLowerCase();
 
         let res = await db.setShop(store.auth.userPhoneNumber, { shopName, shopEmail, shopPhoneNumber, shopLandmark, shopCity, shopState });
 
         if (res) {
             dispatch({ type: 'SET_ALERT', payload: { open: true, message: 'Shop created', severity: 'success' } });
-            fetchShops();
         } else {
             dispatch({ type: 'SET_ALERT', payload: { open: true, message: 'Something went wrong', severity: 'error' } });
         }
-
-        setModal(false);
+        setSpinner(false);
     };
 
     const toggleHandler = async (e, shopId) => {
         if (e.target.name === 'shopOpen') {
             await db.updateShop(store.auth.userPhoneNumber, shopId, { shopOpen: e.target.checked });
-            setDisplayShops(displayShops.map(shop => (shop.shopId === shopId ? {...shop, shopOpen: !e.target.checked}: shop)));
-
         } else if (e.target.name === 'shopDeliver') {
             await db.updateShop(store.auth.userPhoneNumber, shopId, { shopDeliver: e.target.checked });
-            setDisplayShops(displayShops.map(shop => (shop.shopId === shopId ? {...shop, shopDeliver: !e.target.checked}: shop)));
         }
     };
 
     const deleteShopHandler = async (shopId) => {
+        setSpinner(true);
         let res = await db.deleteShop(store.auth.userPhoneNumber, shopId);
-
         if (res) {
-            fetchShops();
-            dispatch({ type: 'SET_ALERT', payload: { open: true, message: 'Shop deleted', severity: 'error' } });
+            dispatch({ type: 'SET_ALERT', payload: { open: true, message: 'Shop deleted', severity: 'success' } });
         } else {
             dispatch({ type: 'SET_ALERT', payload: { open: true, message: 'Something went wrong', severity: 'error' } });
         }
+        setSpinner(false);
     };
+
+
+    const modalArr = [
+        { type: 'text', name: 'shopName', inputClass: 'form__input', placeholder: 'Shop Name', required: true, label: 'Shop Name', labelClass: 'form__label' },
+        { type: 'email', name: 'shopEmail', inputClass: 'form__input', placeholder: 'Shop Email', required: true, label: 'Shop Email', labelClass: 'form__label' },
+        { type: 'text', name: 'shopPhoneNumber', inputClass: 'form__input', placeholder: 'Shop Phone Number', required: true, label: 'Shop Phone Number', labelClass: 'form__label' },
+        { type: 'text', name: 'shopLandmark', inputClass: 'form__input', placeholder: 'Shop Landmark', label: 'Shop Landmark', labelClass: 'form__label' },
+        { type: 'text', name: 'shopCity', inputClass: 'form__input', placeholder: 'Shop City', label: 'Shop City', labelClass: 'form__label' },
+        { type: 'text', name: 'shopState', inputClass: 'form__input', placeholder: 'Shop State', label: 'Shop State', labelClass: 'form__label' },
+        { type: 'submit', name: 'ShopCreate', inputClass: 'btn btn--primary', value: 'Create' }
+    ];
 
 
     return (
         <>
             {spinner && <Spinner />}
             <Header searchHandler={searchHandler} profileHandler={profileHandler} settingHandler={settingHandler} />
-            {profile && <Profile/>}
-            {sidePanel && <SidePanel switchHandler={switchHandler}/>}
+            {profile && <Profile />}
+            {sidePanel && <SidePanel switchHandler={switchHandler} />}
             <div className='cards'>
                 {(displayShops.length > 0) ? displayShops.map((ele, i) => (<ShopCard {...ele} deleteShopHandler={deleteShopHandler} toggleHandler={toggleHandler} key={i} />))
                     : <h3 className='cards-empty'>There is no shop yet.</h3>}
             </div>
             {modal && <Modal title='Create Shop' modalArr={modalArr} ref={modalRef} submitHandler={submitHandler} />}
             <AddCircleIcon className='add-icon' onClick={() => setModal(true)} />
-            {store.alert.open && <Alert/>}
+            {store.alert.open && <Alert />}
         </>
     );
 }

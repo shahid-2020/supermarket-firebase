@@ -44,11 +44,23 @@
         display: flex;
         justify-content: space-between;
 
+        &-main{
+            text-transform: capitalize;
+        }
+
+        &-sub{
+            text-transform: capitalize;
+        }
     }
 }
 
 .product-delete-icon{
     display: inline-block;
     color: $color-tertiary;
+    cursor: pointer;
+}
+
+.product-cart-icon{
+    display: inline-block;
     cursor: pointer;
 }

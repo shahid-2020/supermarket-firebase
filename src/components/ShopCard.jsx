@@ -49,7 +49,7 @@ function ShopCard({ shopName, shopEmail, shopPhoneNumber, shopLandmark, shopCity
 
       <div className='card__group'>
         <h3 className='card__group-main'>Email</h3>
-        <p className='card__group-sub'>{shopEmail}</p>
+        <p className='card__group-sub u-lower-text'>{shopEmail}</p>
       </div>
 
       <div className='card__group'>

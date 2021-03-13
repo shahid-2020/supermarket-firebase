@@ -1,4 +1,5 @@
 @import '../scss/variables';
+@import '../scss/utils';
 @import '../scss/mixins';
 .card{
     width: 40%;
@@ -28,6 +29,13 @@
         display: flex;
         justify-content: space-between;
 
+        &-main{
+            text-transform: capitalize;
+        }
+
+        &-sub{
+            text-transform: uppercase;
+        }
     }
 }
 

@@ -35,9 +35,9 @@ function Form() {
     }, [auth, dispatch, history]);
     const submitHandler = (e) => {
         e.preventDefault();
-        const userName = e.target['name'].value;
-        const userEmail = e.target['email'].value;
-        const userType = e.target['type'].value;
+        const userName = e.target['name'].value.toLowerCase();
+        const userEmail = e.target['email'].value.toLowerCase();
+        const userType = e.target['type'].value.toLowerCase();
         setAuth({ ...auth, userName, userEmail, userType });
 
     };
