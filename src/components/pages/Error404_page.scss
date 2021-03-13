@@ -1,0 +1,12 @@
+@import "../../scss/variables";
+@import "../../scss/mixins";
+.error_page{
+    height: 100vh;
+    background-image: url('../../assets/error_404.jpg');
+    background-position:center;
+    background-repeat: no-repeat;
+
+    @include respond(phone) {
+        background-size: 100%;
+    }
+}

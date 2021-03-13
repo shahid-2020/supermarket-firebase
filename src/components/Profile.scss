@@ -1,0 +1,35 @@
+@import '../scss/variables';
+@import '../scss/functions';
+@import '../scss/mixins';
+
+.profile{
+    width: 35vw;
+    min-height: 90vh;
+    background-image: linear-gradient(rgba($color-black,.9), rgba($color-black,.9));
+    position: fixed;
+    right: 0;
+    z-index: 20;
+
+    @include respond(phone){
+        width: 80vw;
+    }
+
+    &__group{
+        margin: 2rem 2rem;
+        display: flex;
+        justify-content:flex-start;
+        align-items: center;
+
+        &-content{
+            width: 100%;
+            color: $color-white;
+            font-size: 2rem;
+            font-weight: weight(bold);
+            letter-spacing: .2rem;
+            text-transform: capitalize;
+            text-align: center;
+            text-decoration: none;
+            cursor: pointer;
+        }
+    }
+}

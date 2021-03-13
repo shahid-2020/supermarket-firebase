@@ -1,0 +1,46 @@
+@import '../scss/variables';
+@import '../scss/utils';
+@import '../scss/mixins';
+.card{
+    width: 40%;
+    margin: 2rem 0;
+    padding: 2rem;
+    border-left: 1rem solid $color-primary;
+    box-shadow: $box-shadow;
+    transition: all .5s;
+
+    @include respond(phone){
+        width: 80%;
+    }
+
+    &:hover{
+        transform: scale(1.1);
+        box-shadow: 0 1.5rem 4rem rgba($color-black, .10);
+    }
+
+    &__heading{
+        color: $color-primary-dark;
+        text-align: center;
+        text-transform: capitalize;
+    }
+
+    &__group{
+        margin: 1rem 0;
+        display: flex;
+        justify-content: space-between;
+
+        &-main{
+            text-transform: capitalize;
+        }
+
+        &-sub{
+            text-transform: uppercase;
+        }
+    }
+}
+
+.delete-icon{
+    margin: 0 2rem;
+    transform: translateY(.5rem);
+    cursor: pointer;
+}

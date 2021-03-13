@@ -1,0 +1,32 @@
+@import "../scss/variables";
+@import "../scss/functions";
+@import "../scss/global";
+@import "../scss/mixins";
+
+.modal{
+    max-height: 80%;
+    width: 40%;
+    background-color: $color-grey-light-1;
+    padding: 4rem;
+    outline: .4rem solid $color-white;
+    outline-offset: .5rem;
+    overflow: auto;
+    position: relative;
+
+    @include respond(phone){
+        width: 90%;
+    }
+
+    &__close{
+        position: absolute;
+        top: 2rem;
+        right: 2rem;
+        cursor: pointer;
+    }
+
+    &__heading{
+        &-main{
+            color: $color-primary;
+        }
+    }
+}

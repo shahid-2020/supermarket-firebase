@@ -1,0 +1,66 @@
+@import '../scss/variables';
+@import '../scss/mixins';
+
+.product{
+    height: 40rem;
+    width: 30rem;
+    margin: 2rem 1rem;
+    padding: 2rem;
+    border-left: 1rem solid $color-primary;
+    box-shadow: $box-shadow;
+    transition: all .5s;
+
+    @include respond(phone){
+        height: 40rem;
+        width: 90%;
+        margin: 1rem auto;
+        padding: 1rem;
+        border-left: .5rem solid $color-primary;
+    }
+    
+
+    &:hover{
+        transform: scale(1.1);
+        box-shadow: 0 1.5rem 4rem rgba($color-black, .10);
+    }
+
+    &__heading{
+        color: $color-primary-dark;
+        text-align: center;
+        text-transform: capitalize;
+    }
+
+    &__img{
+        display: inline-block;
+        margin: .5rem auto;
+        height: 60%;
+        width: 100%;
+        object-fit: cover;
+        overflow-x: hidden;
+    }
+
+    &__group{
+        margin: .5rem 0;
+        display: flex;
+        justify-content: space-between;
+
+        &-main{
+            text-transform: capitalize;
+        }
+
+        &-sub{
+            text-transform: capitalize;
+        }
+    }
+}
+
+.product-delete-icon{
+    display: inline-block;
+    color: $color-tertiary;
+    cursor: pointer;
+}
+
+.product-cart-icon{
+    display: inline-block;
+    cursor: pointer;
+}
